@@ -11,6 +11,6 @@ export class Negociacoes {
     paraArray(): Negociacao[]{
         // Programação defensiva para não permitir que nenhuma atribuição desnecessária modifique 
         // a lista original de negociações.
-        return [].concat(this._negociacoes);
+        return ([] as Negociacao[]).concat(this._negociacoes);
     }
 }
