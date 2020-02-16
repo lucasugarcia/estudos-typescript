@@ -1,4 +1,4 @@
-System.register(["./LogarTempoDeExecucao", "./DomInject"], function (exports_1, context_1) {
+System.register(["./LogarTempoDeExecucao", "./DomInject", "./Throttle"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     function exportStar_1(m) {
@@ -15,6 +15,9 @@ System.register(["./LogarTempoDeExecucao", "./DomInject"], function (exports_1, 
             },
             function (DomInject_1_1) {
                 exportStar_1(DomInject_1_1);
+            },
+            function (Throttle_1_1) {
+                exportStar_1(Throttle_1_1);
             }
         ],
         execute: function () {
