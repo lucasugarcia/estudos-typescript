@@ -2,6 +2,7 @@ import { Negociacao, Negociacoes, NegociacaoParcial } from '../models/index';
 import { NegociacoesView, MensagemView } from '../views/index';
 import { domInject, throttle } from '../helpers/decorators/index';
 import { NegociacaoService, HandlerFunction } from '../services/index';
+import { imprime } from '../helpers/index';
 
 export class NegociacaoController {
     
@@ -31,6 +32,7 @@ export class NegociacaoController {
 
         if(!this._verificarDiaUtil(data)) {
             this._mensagemView.update('Negociações só podem ser feitas em dias úteis');
+            return;
         }
 
         const negociacao = new Negociacao(
@@ -38,8 +40,10 @@ export class NegociacaoController {
             parseInt(this._inputQuantidade.val()),
             parseFloat(this._inputValor.val())
         );
-
+            
         this._negociacoes.adiciona(negociacao);
+
+        imprime(negociacao, this._negociacoes);
         
         this._negociacoesView.update(this._negociacoes);
 
@@ -51,23 +55,33 @@ export class NegociacaoController {
     }
 
     @throttle()
-    importaDados() {
+    async importaDados() {
+        
+        try {
+            const negociacoesParaImportar = await this._negociacaoService
+                .obterNegociacoes(res => {
+                    if(res.ok) {
+                        return res;
+                    } else {
+                        throw new Error(res.statusText);
+                    }
+                });
 
-        this._negociacaoService
-            .obterNegociacoes(res => {
-                if(res.ok) {
-                    return res;
-                } else {
-                    throw new Error(res.statusText);
-                }
-            })
-            .then(negociacoes => {
-                negociacoes.forEach(negociacao => 
-                    this._negociacoes.adiciona(negociacao)
-                )
+            const negociacoesJaImportadas = this._negociacoes.paraArray();
 
-                this._negociacoesView.update(this._negociacoes);
-            });
+            negociacoesParaImportar
+                .filter(negociacao => 
+                    !negociacoesJaImportadas.some(jaImportada => 
+                        negociacao.igual(jaImportada)))
+                .forEach(negociacao => 
+                this._negociacoes.adiciona(negociacao)
+            )
+
+            this._negociacoesView.update(this._negociacoes);
+        }
+        catch(erro) {
+            this._mensagemView.update(erro.messages);
+        }
     }
 }
 

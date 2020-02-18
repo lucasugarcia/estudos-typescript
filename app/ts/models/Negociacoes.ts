@@ -1,6 +1,7 @@
 import { Negociacao } from './Negociacao';
+import { MeuObjeto } from './MeuObjeto';
 
-export class Negociacoes {
+export class Negociacoes implements MeuObjeto<Negociacoes> {
 
     private _negociacoes: Negociacao[] = [];
 
@@ -12,5 +13,14 @@ export class Negociacoes {
         // Programação defensiva para não permitir que nenhuma atribuição desnecessária modifique 
         // a lista original de negociações.
         return ([] as Negociacao[]).concat(this._negociacoes);
+    }
+
+    paraTexto(): void {
+        console.log('Impressão');
+        console.log(JSON.stringify(this._negociacoes));
+    }
+
+    igual(negociacoes: Negociacoes): boolean {
+        return JSON.stringify(this._negociacoes) == JSON.stringify(negociacoes.paraArray());
     }
 }
